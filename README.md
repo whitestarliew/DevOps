@@ -1,2 +1,2 @@
 # ansible_tutorial
-ansible tutorial 
+This is a sample 

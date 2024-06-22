@@ -1,0 +1,9 @@
+
+Resources:
+  CodecommitTest:
+    Type: AWS::CodeCommit::Repository
+    Properties:
+      RepositoryName: Repo-Test-1
+      RepositoryDescription: This is a test repository, hello 
+      Code: 
+        BranchName: Test-development

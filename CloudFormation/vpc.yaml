@@ -1,0 +1,185 @@
+Parameters:
+  InstanceType:
+    Description: just a template for the instance, nothing more than that.
+    Type: String
+    Default: t3.micro
+    AllowedValues:
+      - t3.micro
+      - t3.medium
+      - t2.micro
+      - t2.medium
+    ConstraintDescription: Kindly use a valid instance type.
+
+
+Resources:
+  VPCCF:
+    Type: AWS::EC2::VPC
+    Properties: 
+      CidrBlock: 192.168.12.0/24
+      EnableDnsHostnames: True
+      EnableDnsSupport: True
+      Tags:
+        -
+          Key: "Name"
+          Value: "VPC With CloudFormation"
+
+  VPCCF2:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 192.168.13.0/24
+      EnableDnsHostnames: True
+      EnableDnsSupport: True
+      Tags:
+        - 
+          Key: "Name"
+          Value: "VPC2 with cloudformation"
+
+#Internet Gateway 
+  IGWforCloudFormation:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - 
+          Key: "Name"
+          Value: "CloudFormation on Internet Gateway"
+
+  IGWAttachtoVPC:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPCCF
+      InternetGatewayId: !Ref IGWforCloudFormation
+
+  #Route Table
+
+  PublicFacingRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPCCF
+      Tags:
+        - 
+          Key: "Name"
+          Value: "Public Route Table CloudFormation"
+
+  PrivateFacingRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPCCF
+      Tags:
+        - 
+          Key: "Name"
+          Value: "Private Route Table CloudFormation"
+
+  #Routing 
+
+  RouteTableAssociate1:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PublicFacingRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref IGWforCloudFormation
+      
+  RouteTableAssociate2:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateFacingRouteTable
+      DestinationCidrBlock: 192.168.12.1/27
+      VpcEndpointId: !Ref VPCCF
+      
+#Nat Gateway
+  # NatgatewayCF:
+  #   Type: AWS::EC2::NatGateway
+  #   Properties:
+  #     # AllocationId: String  --> Just in case you have an Elastic IP then you use 
+  #     ConnectivityType: Public
+  #     SubnetId: !Ref publicsubnet1
+      
+
+  #Subnet
+  publicsubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPCCF
+      AvailabilityZone: us-east-1a
+      CidrBlock: 192.168.12.1/27
+      MapPublicIpOnLaunch: False
+      Tags:
+        - Key: Name
+          Value: public subnet on CloudFormation
+          
+
+  #Private Subnet 
+  privatesubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPCCF
+      AvailabilityZone: us-east-1a
+      CidrBlock: 192.168.12.65/27
+      MapPublicIpOnLaunch: False
+      Tags:
+        - Key: Name
+          Value: private subnet on CloudFormation
+  
+ #peering connection 
+  # p2pvpc:
+  #   Type: AWS::EC2::VPCPeeringConnection
+  #   Properties:
+  #     PeerOwnerId:
+  #     PeerRegion: us-east-1
+  #     PeerRoleArn:
+  #     PeerVPCId:
+  #     Tags:
+  #       - Key: name
+  #         Value: just a peer
+
+  # RTAttachtosubnet2:
+  #   Type: AWS::EC2::SubnetRouteTableAssociation
+  #   Properties:
+  #     RouteTableId: !Ref PrivateFacingRouteTable
+  #     SubnetId: !Ref privatesubnet1
+  
+
+
+#Route Table attachment           
+  RTAttachtosubnet1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicFacingRouteTable
+      SubnetId: !Ref publicsubnet1
+
+  # RTAttachtosubnet2:
+  #   Type: AWS::EC2::SubnetRouteTableAssociation
+  #   Properties:
+  #     RouteTableId: !Ref PrivateFacingRouteTable
+  #     SubnetId: !Ref privatesubnet1
+  
+Outputs: 
+  VPCtest:
+    Description: Output for VPC
+    Value: !Ref VPCCF
+    Export:
+      Name: VPCOutput
+
+  SubnetOutput:
+    Description: Output for subnet
+    Value: !Ref publicsubnet1
+    Export:
+      Name: subnetO
+
+  SubnetOutput2:
+    Description: Output for subnet
+    Value: !Ref privatesubnet1
+    Export:
+      Name: subnet1
+
+  
+  RoutableOutput:
+    Description: Output for subnet
+    Value: !Ref PublicFacingRouteTable
+    Export:
+      Name: rtoutputW
+      
+  IGWOutput:
+    Description: Output for IGW
+    Value: !Ref IGWforCloudFormation
+    Export:
+      Name: IGWO

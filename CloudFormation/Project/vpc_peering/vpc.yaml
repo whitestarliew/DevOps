@@ -1,0 +1,160 @@
+#Parameters:
+  # InstanceType:
+  #   Description: just a template for the instance, nothing more than that.
+  #   Type: String
+  #   Default: t3.micro
+  #   ConstraintDescription: Kindly use a valid instance type.
+
+Mappings:
+  AZforMapping:
+    eu-west-2:
+      AvailabilityZone: eu-west-2a
+    ap-east-1:
+      AvailabilityZone: ap-east-1a
+    ap-southeast-1:
+      AvailabilityZone: ap-southeast-1a
+    ap-southeast-2:
+      AvailabilityZone: ap-southeast-2a
+    us-east-1:
+      AvailabilityZone: us-east-1a
+    me-south-1:
+      AvailabilityZone: me-south-1a
+  
+
+
+Resources:
+  VPCCF:
+    Type: AWS::EC2::VPC
+    Properties: 
+      CidrBlock: 192.168.12.0/24
+      EnableDnsHostnames: True
+      EnableDnsSupport: True
+      Tags:
+        -
+          Key: "Name"
+          Value: "VPC With CloudFormation"
+
+#Internet Gateway 
+  IGWforCloudFormation:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - 
+          Key: "Name"
+          Value: "CloudFormation on Internet Gateway"
+
+  IGWAttachtoVPC:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPCCF
+      InternetGatewayId: !Ref IGWforCloudFormation
+
+
+     
+  #Public Subnet
+
+  publicsubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPCCF
+      AvailabilityZone: !FindInMap [AZforMapping, !Ref 'AWS::Region',AvailabilityZone]
+      CidrBlock: 192.168.12.1/27
+      MapPublicIpOnLaunch: True
+      Tags:
+        - Key: Name
+          Value: public subnet on CloudFormation
+  PublicFacingRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPCCF
+      Tags:
+        - 
+          Key: "Name"
+          Value: "Public Route Table CloudFormation"   
+
+  RouteTableAssociate1:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PublicFacingRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref IGWforCloudFormation
+
+  publicsubnetroutetableassociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref publicsubnet1
+      RouteTableId: !Ref PublicFacingRouteTable
+
+  #Private Subnet 
+  privatesubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPCCF
+      AvailabilityZone: !FindInMap [AZforMapping, !Ref 'AWS::Region',AvailabilityZone]
+      CidrBlock: 192.168.12.65/27
+      MapPublicIpOnLaunch: False
+      Tags:
+        - Key: Name
+          Value: private subnet on CloudFormation
+  
+  PrivateFacingRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPCCF
+      Tags:
+        - 
+          Key: "Name"
+          Value: "Private Route Table CloudFormation"
+
+  PrivateSubnetARouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref privatesubnet1
+      RouteTableId: !Ref PrivateFacingRouteTable
+
+
+#Nat Gateway 
+  NatGatewayCF:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatGatewayEIP.AllocationId
+      SubnetId: !Ref publicsubnet1
+      Tags:
+      - Key: Name
+        Value: publicfacingNAT
+  NatGatewayEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+  NatGatewayRouting:
+    DependsOn: NatGatewayCF
+    Type: AWS::EC2::Route
+    Properties:
+<<<<<<< HEAD
+      RouteTableId: !Ref PublicFacingRouteTable
+      DestinationBlock: '0.0.0.0/0'
+=======
+      RouteTableId: !Ref PrivateFacingRouteTable
+      DestinationCidrBlock: '0.0.0.0/0'
+>>>>>>> 9c8163e68fb1d076f4d375dee9c9120ace4b9687
+      NatGatewayId: !Ref NatGatewayCF
+  
+
+#Route Table attachment           
+Outputs: 
+  VPCtest:
+    Description: Output for VPC
+    Value: !Ref VPCCF
+    Export:
+      Name: VPC1
+  
+  PublicSubnetOutput:
+    Description: Subnet for output
+    Value: !Ref publicsubnet1
+    Export:
+      Name: publicsubnetoutput
+  PrivateSubnetOutput:
+    Description: Private Subnet for output
+    Value: !Ref privatesubnet1
+    Export:
+      Name: privatesubnetoutput

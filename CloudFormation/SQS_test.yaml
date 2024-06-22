@@ -1,0 +1,23 @@
+Resources:
+  SQSCF:
+    Type: AWS::SQS::Queue
+    Properties: 
+      DelaySeconds: 5
+      #FifoQueue: False
+      MaximumMessageSize: 262144
+      MessageRetentionPeriod: 60
+      QueueName: sqstest
+      ReceiveMessageWaitTimeSeconds: 0
+      SqsManagedSseEnabled: False
+      #Tags: 
+       # - Key: "Name"
+        #  Value: "SQSCF"
+      VisibilityTimeout: 25
+
+Outputs:
+  SQSOutput:
+    Description: Output for SQS 
+    Value: !Ref SQSCF
+    Export:
+      Name: SQSOutput 
+  

@@ -1,0 +1,55 @@
+Parameters:
+  appname:
+    Description: The application name
+  VPCId:
+    Description: VPC to create the security group into
+    Type: AWS::EC2::VPC::Id
+
+Mappings:
+  AZforMapping:
+    eu-west-2:
+      AvailabilityZone: eu-west-2a
+    ap-east-1:
+      AvailabilityZone: ap-east-1a
+    ap-southeast-1:
+      AvailabilityZone: ap-southeast-1a
+    ap-southeast-2:
+      AvailabilityZone: ap-southeast-2a
+    us-east-1:
+      AvailabilityZone: us-east-1a
+    me-south-1:
+      AvailabilityZone: me-south-1a
+    us-east-2:
+      AvailabilityZone: us-east-2b
+  
+Resources:
+  SSHSecurityGroup2:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Sub Security group for ${appname}
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        CidrIp: 0.0.0.0/0
+        FromPort: 22
+        ToPort: 22
+      - IpProtocol: tcp
+        CidrIp: 0.0.0.0/0
+        FromPort: 3389
+        ToPort: 3389
+      - IpProtocol: tcp
+        CidrIp: 0.0.0.0/0
+        FromPort: 443
+        ToPort: 443
+      - IpProtocol: tcp
+        CidrIp: 0.0.0.0/0
+        FromPort: 80
+        ToPort:   80
+      - IpProtocol: tcp
+        CidrIp: 0.0.0.0/0
+        FromPort: 3306
+        ToPort: 3306
+
+Outputs:
+  SecurityGroupId:
+    Value: !Ref SSHSecurityGroup2
+    Description: Output for Security Group 

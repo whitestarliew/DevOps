@@ -1,0 +1,30 @@
+Mappings:
+  AvailabilityZoneMappings:
+    us-east-1:
+      AvailabilityZone: us-east-1a
+    ap-southeast-1:
+      AvailabilityZone: ap-southeast-1a
+    ap-northeast-1:
+      AvailabilityZone: ap-northeast-1a
+    us-east-2:
+      AvailabilityZone: us-east-2a
+Resources:
+  newRDS:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      #DBSecurityGroups: 
+       # - "NewSecurityGroup" d
+      Engine: MySQL
+      EngineVersion: 8.0.28
+      DBInstanceIdentifier: "database-1"
+      MasterUsername: "laputa"
+      MasterUserPassword: Hello123
+      #MonitoringInterval: '60'
+      #MonitoringRoleArn: 'arn:aws:iam::{enteryourownarn}:role/rds-monitoring-role'
+      # Allocated Storage means that how much of the storage(In GB) we needed? 
+      AllocatedStorage: 20
+      StorageEncrypted: False
+      DBInstanceClass: db.t3.micro
+      #If you are not to build high availability architecture, then just disable it "False" 
+      MultiAZ: False
+      AvailabilityZone: !FindInMap AvailabilityZoneMappings

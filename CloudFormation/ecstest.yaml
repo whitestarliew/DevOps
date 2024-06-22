@@ -1,0 +1,36 @@
+Parameters:
+  SecurityGroup:
+
+Resources:
+  Type: AWS::ECS::Service
+  Properties: 
+    CapacityProviderStrategy: 
+      - CapacityProviderStrategyItem
+    Cluster: cluster-demo
+    DeploymentConfiguration: 
+      DeploymentConfiguration
+    DeploymentController: 
+      DeploymentController
+    DesiredCount: 1
+    EnableECSManagedTags: False
+    EnableExecuteCommand: False
+    HealthCheckGracePeriodSeconds: 30
+    LaunchType: Fargate
+    LoadBalancers: 
+      - LoadBalancer
+    NetworkConfiguration: 
+      NetworkConfiguration
+    PlacementConstraints: 
+      - PlacementConstraint
+    PlacementStrategies: 
+      - PlacementStrategy
+    PlatformVersion: String
+    PropagateTags: String
+    Role: String
+    SchedulingStrategy: String
+    ServiceName: String
+    ServiceRegistries: 
+      - ServiceRegistry
+    Tags: 
+      - Tag
+    TaskDefinition: String

@@ -1,0 +1,35 @@
+Resources:
+  SecurityGroupTest:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http to client host
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        CidrIp: 0.0.0.0/0
+        FromPort: 22
+        ToPort: 22
+      - IpProtocol: tcp
+        CidrIp: 0.0.0.0/0
+        FromPort: 3389
+        ToPort: 3389
+      - IpProtocol: tcp
+        CidrIp: 0.0.0.0/0
+        FromPort: 443
+        ToPort: 443
+      - IpProtocol: tcp
+        CidrIp: 0.0.0.0/0
+        FromPort: 80
+        ToPort:   80
+      - IpProtocol: tcp
+        CidrIp: 0.0.0.0/0
+        FromPort: 3306
+        ToPort: 3306
+    DeletionPolicy: Retain
+
+Outputs:
+  SecurityGroup1Output:
+    Description: Output for security group
+    Value: !Ref SecurityGroupTest
+    Export:
+      Name: SGOutput
+   

@@ -1,0 +1,32 @@
+Parameters:
+  EnvironmentName:
+    Description: Environment Name
+    Type: String
+    AllowedValues: [development, production]
+    ConstraintDescription: must be development or production
+
+Mappings:
+  AWSRegionArch2AMI:
+    ap-southeast-1:
+      HVM64: ami-03ca998611da0fe12
+    us-east-1:
+      HVM64: ami-0742b4e673072066f
+    us-east-2:
+      HVM64: ami-05d72852800cbf29e
+
+  EnvironmentToInstanceType:
+    development:
+      instanceType: t2.micro
+    # we want a bigger instance type in production
+    production:
+      instanceType: t2.micro
+      #you may choose a larger aso 
+
+Resources:
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !FindInMap [EnvironmentToInstanceType, !Ref 'EnvironmentName', instanceType]
+      #Please refer to the above 1 
+      # Note we use the pseudo parameter AWS::Region
+      ImageId: !FindInMap [AWSRegionArch2AMI, !Ref 'AWS::Region', HVM64]

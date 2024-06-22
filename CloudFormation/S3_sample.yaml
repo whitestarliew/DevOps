@@ -1,0 +1,9 @@
+Resources:
+  MyS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: PublicRead
+      BucketName: "liew-9833405"
+      ServerSideEncryptionConfiguration: ServerSideEncryptionRule
+
+Outputs: 

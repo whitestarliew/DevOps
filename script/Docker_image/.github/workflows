@@ -23,3 +23,6 @@ jobs:
           aws eks --region ${{ secrets.AWS_DEFAULT_REGION }} get-cluster --name abc-0101 > cluster-info.json
           kubectl apply -f cluster-info.json
           kubectl apply -f deployment.yaml
+      - name: Install k9s
+        run: |
+          wget -O - https://raw.githubusercontent.com/derailed/k9s/master/install.sh | bash

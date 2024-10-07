@@ -1,13 +1,13 @@
-package com.example.springboot_java_demo;
+package com.example.spring_boot_docker;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SpringbootJavaDemoApplication {
+public class SpringBootDockerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SpringbootJavaDemoApplication.class, args);
+		SpringApplication.run(SpringBootDockerApplication.class, args);
 	}
 
 }
